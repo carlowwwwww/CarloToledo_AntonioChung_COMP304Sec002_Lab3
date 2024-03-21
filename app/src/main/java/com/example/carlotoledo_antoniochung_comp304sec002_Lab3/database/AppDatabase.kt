@@ -4,16 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.carlotoledo_antoniochung_comp304sec002_Lab3.database.schedule.Schedule
+import com.example.carlotoledo_antoniochung_comp304sec002_Lab3.database.schedule.Flights
 import com.example.carlotoledo_antoniochung_comp304sec002_Lab3.database.schedule.ScheduleDao
 
-/**
- * Defines a database and specifies data tables that will be used.
- * Version is incremented as new tables/columns are added/removed/changed.
- * You can optionally use this class for one-time setup, such as pre-populating a database.
- */
-
-@Database(entities = [Schedule::class], version = 2)
+@Database(entities = [Flights::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun scheduleDao(): ScheduleDao
 
@@ -29,6 +23,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "app_database"
                 )
                     .createFromAsset("database/ArrivalTimes.db") // Create database from asset
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance

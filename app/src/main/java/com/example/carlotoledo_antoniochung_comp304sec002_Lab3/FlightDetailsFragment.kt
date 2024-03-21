@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 class FlightDetailsFragment: Fragment() {
 
     companion object {
-        var FLIGHT_ID = "flightID"
+        var AIRLINE = "airline"
     }
 
     private var _binding: FragmentFlightDetailsBinding? = null
@@ -27,7 +27,7 @@ class FlightDetailsFragment: Fragment() {
 
     private lateinit var recyclerView: RecyclerView
 
-    private lateinit var flightID: String
+    private lateinit var airline: String
 
     private val viewModel: AirportScheduleViewModel by activityViewModels {
         AirportScheduleViewModelFactory(
@@ -39,7 +39,7 @@ class FlightDetailsFragment: Fragment() {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
-            flightID = it.getString(FLIGHT_ID).toString()
+            airline = it.getString(AIRLINE).toString()
         }
     }
 
@@ -57,13 +57,12 @@ class FlightDetailsFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        val airportScheduleAdapter = AirportScheduleListAdapter {}
-        // by passing in the stop name, filtered results are returned,
-        // and tapping rows won't trigger navigation
+        val airportScheduleAdapter = AirportScheduleListAdapter { _, _ -> }
+
         recyclerView.adapter = airportScheduleAdapter
 
         lifecycle.coroutineScope.launch {
-            viewModel.scheduleForStopName(flightID).collect() {
+            viewModel.scheduleForAirlineName(airline).collect() {
                 airportScheduleAdapter.submitList(it)
             }
         }

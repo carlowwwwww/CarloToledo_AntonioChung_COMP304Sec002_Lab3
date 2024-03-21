@@ -41,16 +41,19 @@ class FullScheduleFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        AirportScheduleListAdapter.currentView = 0
         recyclerView = binding.recyclerView
-
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        val airportScheduleAdapter = AirportScheduleListAdapter {
+        val airportScheduleAdapter = AirportScheduleListAdapter { flight, _->
             val action = FullScheduleFragmentDirections
                 .actionFullScheduleFragmentToFlightDetailsFragment(
-                    flightID = it.id
+                    airline = flight.airline
                 )
+
             view.findNavController().navigate(action)
+
+
         }
 
         recyclerView.adapter = airportScheduleAdapter

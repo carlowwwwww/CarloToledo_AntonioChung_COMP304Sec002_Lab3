@@ -1,42 +1,56 @@
 package com.example.carlotoledo_antoniochung_comp304sec002_Lab3
 
-import android.annotation.SuppressLint
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.carlotoledo_antoniochung_comp304sec002_Lab3.database.schedule.Schedule
+import androidx.viewbinding.ViewBinding
+import com.example.carlotoledo_antoniochung_comp304sec002_Lab3.database.schedule.Flights
+import com.example.carlotoledo_antoniochung_comp304sec002_Lab3.databinding.FlightDetailsItemBinding
 import com.example.carlotoledo_antoniochung_comp304sec002_Lab3.databinding.FlightInfoItemBinding
 
 
-class AirportScheduleListAdapter(private val onItemClicked: (Schedule) -> Unit) :
-    ListAdapter<Schedule, AirportScheduleListAdapter.AirportViewHolder>(DiffCallback) {
-
+class AirportScheduleListAdapter(
+    private val onItemClicked: (Flights, AirportViewHolder) -> Unit) :
+    ListAdapter<Flights, AirportScheduleListAdapter.AirportViewHolder>(DiffCallback) {
     companion object {
-        private val DiffCallback = object : DiffUtil.ItemCallback<Schedule>() {
-            override fun areItemsTheSame(oldItem: Schedule, newItem: Schedule): Boolean {
+        var currentView = 0
+
+        private val DiffCallback = object : DiffUtil.ItemCallback<Flights>() {
+            override fun areItemsTheSame(oldItem: Flights, newItem: Flights): Boolean {
                 return oldItem.id == newItem.id
             }
 
-            override fun areContentsTheSame(oldItem: Schedule, newItem: Schedule): Boolean {
+            override fun areContentsTheSame(oldItem: Flights, newItem: Flights): Boolean {
                 return oldItem == newItem
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AirportViewHolder {
-        val viewHolder = AirportViewHolder(
-            FlightInfoItemBinding.inflate(
-                LayoutInflater.from( parent.context),
-                parent,
-                false
-            )
-        )
+
+        // Inflate the layout for the view holder
+        val inflater = LayoutInflater.from(parent.context)
+        var binding: ViewBinding
+
+        if (currentView == 1) {
+            binding = FlightDetailsItemBinding.inflate(inflater, parent, false)
+        } else {
+            binding = FlightInfoItemBinding.inflate(inflater, parent, false)
+        }
+
+        // Create a view holder with the inflated binding
+        val viewHolder = AirportViewHolder(binding)
+
+        // Set click listener for the view holder's itemView
         viewHolder.itemView.setOnClickListener {
             val position = viewHolder.adapterPosition
-            onItemClicked(getItem(position))
+            currentView = 1
+            onItemClicked(getItem(position), viewHolder)
         }
+
         return viewHolder
     }
 
@@ -44,14 +58,30 @@ class AirportScheduleListAdapter(private val onItemClicked: (Schedule) -> Unit) 
         holder.bind(getItem(position))
     }
 
-    class AirportViewHolder(
-        private var binding: FlightInfoItemBinding
-    ): RecyclerView.ViewHolder(binding.root) {
+    class AirportViewHolder(private val binding: ViewBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(schedule: Schedule) {
-            binding.airlineTextView.text = schedule.airline
-            binding.arrivalTimeTextView.text = schedule.arrivalTime
-            binding.terminalTextView.text = schedule.terminal
+        fun bind(flights: Flights) {
+            when (binding) {
+                is FlightInfoItemBinding -> {
+                    binding.airlineTextView.text = flights.airline
+                    binding.arrivalTimeTextView.text = flights.arrivalTime
+                    binding.terminalTextView.text = flights.terminal
+                }
+                is FlightDetailsItemBinding -> {
+                    binding.airlineTextView.text = flights.airline
+                    binding.arrivalTimeTextView.text = flights.arrivalTime
+                    binding.terminalTextView.text = flights.terminal
+                    binding.statusTextView.text = flights.status
+
+                    if (binding.statusTextView.text == "On Time") {
+                        // If using ViewBinding
+                        binding.statusTextView.setTextColor(Color.parseColor("#00FF00"))
+                    } else {
+                        binding.statusTextView.setTextColor(Color.parseColor("#FF0000"))
+                    }
+                }
+            }
         }
     }
+
 }

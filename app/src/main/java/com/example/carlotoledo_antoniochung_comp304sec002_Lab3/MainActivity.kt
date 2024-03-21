@@ -21,6 +21,9 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
         setupActionBarWithNavController(navController)
+
+        // Set the title of the action bar
+        supportActionBar?.title = "Airport Schedule"
     }
 
     override fun onSupportNavigateUp(): Boolean {
